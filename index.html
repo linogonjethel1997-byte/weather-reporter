@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Report - Presentation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Round MT Bold', sans-serif;
+            overflow: hidden;
+            background-color: #222;
+        }
+
+        /* Core Stage Wrapper Layer */
+        .screen-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('mainpage.png');
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 30px;
+            transition: background-image 0.2s ease-in-out;
+        }
+
+        /* Student Attention Title Graphics */
+        .title-header {
+            font-size: 5rem;
+            color: #fff;
+            text-shadow: 5px 5px 0px #ff6b6b, -3px -3px 0px #4ecdc4, 6px 6px 18px rgba(0,0,0,0.5);
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .footer-class {
+            font-size: 2.5rem;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.65);
+            padding: 10px 50px;
+            border-radius: 50px;
+            margin-bottom: 5px;
+            box-shadow: 0 8px 166px rgba(0,0,0,0.4);
+            border: 4px solid #ffde43;
+            z-index: 199;
+        }
+
+        /* Navigation Controls Assets Mapping */
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            width: 90px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            z-index: 200;
+        }
+        .back-btn:hover {
+            transform: scale(1.15);
+            filter: brightness(1.2);
+        }
+
+        .next-btn {
+            position: absolute;
+            bottom: 35px;
+            right: 35px;
+            width: 130px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            z-index: 190;
+        }
+        .next-btn:hover {
+            transform: scale(1.15);
+            filter: brightness(1.2);
+        }
+
+        /* Interactive Example Trigger System (image_1e6bdb.jpg Layout Addition) */
+        .example-dropdown-wrapper {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            display: inline-block;
+            z-index: 210;
+        }
+
+        .example-trigger-btn {
+            width: 140px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: block;
+        }
+
+        .example-trigger-btn:hover {
+            transform: scale(1.08);
+        }
+
+        .dropdown-menu-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 65px;
+            background: rgba(255, 255, 255, 0.96);
+            border: 5px solid #ff9f43;
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            width: 220px;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Toggle display logic using active class triggered via mouse interactions */
+        .example-dropdown-wrapper:hover .dropdown-menu-content,
+        .example-dropdown-wrapper.active .dropdown-menu-content {
+            display: flex;
+        }
+
+        .dropdown-thumb-item {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 3px solid #4ecdc4;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+
+        .dropdown-thumb-item:hover {
+            transform: scale(1.05);
+            border-color: #ff6b6b;
+        }
+
+        /* Presentation View System State Classes */
+        .view {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 90px 50px;
+        }
+
+        .view.active {
+            display: flex;
+        }
+
+        /* Main App Grid Config */
+        .main-menu-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 35px;
+            max-width: 1300px;
+            margin: auto;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #ff9f43, #ff6b6b);
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            padding: 25px 60px;
+            border: 6px solid #fff;
+            border-radius: 35px;
+            cursor: pointer;
+            box-shadow: 0 16px 0px #c84b43, 0 20px 30px rgba(0,0,0,0.45);
+            transition: all 0.1s ease;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            min-width: 350px;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 21px 0px #c84b43, 0 25px 35px rgba(0,0,0,0.55);
+            background: linear-gradient(135deg, #ffa852, #ff7676);
+        }
+
+        .menu-btn:active {
+            transform: translateY(11px);
+            box-shadow: 0 5px 0px #c84b43, 0 11px 11px rgba(0,0,0,0.45);
+        }
+
+        /* Rules Layout */
+        .rules-img {
+            max-height: 72vh;
+            max-width: 90%;
+            object-fit: contain;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        /* Warm-up Content Blocks & Custom Transparency Processing */
+        .warmup-cover-img {
+            max-height: 70vh;
+            max-width: 85%;
+            object-fit: contain;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        .question-title {
+            font-size: 4.2rem;
+            color: #fff;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.85);
+            margin-bottom: 20px;
+            text-align: center;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 50px;
+            border-radius: 25px;
+            border: 3px solid #ff9f43;
+        }
+
+        .game-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 60px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .game-box {
+            background: rgba(255, 255, 255, 0.96);
+            border: 8px solid #4ecdc4;
+            border-radius: 35px;
+            width: 500px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 18px 30px rgba(0,0,0,0.35);
+            overflow: hidden;
+            padding: 25px;
+            position: relative;
+        }
+
+        .game-box img.job-gif {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .reveal-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .reveal-click-icon {
+            width: 220px;
+            height: auto;
+            transition: transform 0.2s;
+        }
+        .reveal-inner:hover .reveal-click-icon {
+            transform: scale(1.12) rotate(-5deg);
+        }
+
+        .answer-text {
+            font-size: 5.5rem;
+            font-weight: 900;
+            color: #10ac84;
+            text-align: center;
+            word-break: break-all;
+            line-height: 1.1;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.15);
+        }
+
+        /* Clean Artifact Isolation */
+        .greatjob-container-node {
+            position: absolute;
+            right: -100px;
+            top: -85px;
+            width: 240px;
+            height: auto;
+            transform: rotate(12deg);
+            z-index: 99;
+            display: none;
+            pointer-events: none;
+        }
+
+        .greatjob-gif-render {
+            width: 100%;
+            height: auto;
+            mix-blend-mode: multiply;
+        }
+
+        /* Weather Reporter Layout Elements */
+        .reporter-layout {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            width: 100%;
+            max-width: 1400px;
+        }
+
+        .reporter-img-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .reporter-img-large {
+            height: 70vh;
+            width: auto;
+            max-width: 500px;
+            object-fit: contain;
+            filter: drop-shadow(10px 15px 20px rgba(0,0,0,0.4));
+        }
+
+        .reporter-content {
+            flex: 1.3;
+            background: rgba(255, 255, 255, 0.97);
+            padding: 40px;
+            border-radius: 40px;
+            border: 8px solid #ff9f43;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.45);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .reporter-q {
+            font-size: 3.2rem;
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 25px;
+            line-height: 1.2;
+        }
+
+        .reveal-arrow-btn {
+            background: #ff9f43;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            font-size: 2.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+            transition: transform 0.2s, background-color 0.2s;
+            align-self: center;
+        }
+
+        .reveal-arrow-btn:hover {
+            transform: scale(1.12);
+            background: #ff8f23;
+        }
+
+        .reporter-bullets {
+            display: none;
+            margin-top: 25px;
+            list-style-type: none;
+            width: 100%;
+        }
+
+        .reporter-bullets li {
+            font-size: 2.1rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            position: relative;
+            padding-left: 55px;
+            line-height: 1.4;
+            font-weight: bold;
+        }
+
+        .reporter-bullets li::before {
+            content: "☀️";
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 2.3rem;
+        }
+
+        /* Submenus Layout Configurations */
+        .submenu-title {
+            font-size: 4rem;
+            color: white;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.9);
+            margin-bottom: 40px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px 40px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .difficulty-img-btn {
+            width: 260px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.2s;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+        }
+
+        .difficulty-img-btn:hover {
+            transform: translateY(-8px) scale(1.05);
+            filter: brightness(1.08) drop-shadow(0 15px 20px rgba(0,0,0,0.4));
+        }
+
+        /* Shared Workspace Split Pane Elements */
+        .split-layout {
+            display: flex;
+            width: 100%;
+            height: auto;
+            max-width: 1500px;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .left-sentence-pane {
+            flex: 1.2;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            border: 8px solid #4ecdc4;
+            padding: 40px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.35);
+            height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-interactive-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            height: 520px;
+        }
+
+        /* Sentence Text Sizes Optimization */
+        .pattern-text-box {
+            font-size: 2.3rem;
+            line-height: 1.5;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .pattern-text-box p {
+            margin-bottom: 20px;
+        }
+
+        .pattern-text-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Highlighting Core Typographic Definitions */
+        .highlight-name {
+            background-color: #ffde43;
+            color: #000;
+            padding: 2px 15px;
+            border-radius: 12px;
+            border: 3px dashed #ff9f43;
+            display: inline-block;
+        }
+
+        .highlight-underline {
+            background-color: #ff9f43;
+            color: white;
+            text-decoration: underline;
+            padding: 2px 15px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        /* Large Image Containers */
+        .large-sample-img {
+            max-height: 50vh;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 30px;
+            border: 8px solid white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* Roleplay Interactive Matrix Definitions */
+        .grid-mystery-boxes {
+            display: grid;
+            gap: 20px;
+            width: 100%;
+            max-width: 550px;
+            justify-content: center;
+        }
+
+        .grid-6 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .mystery-card {
+            aspect-ratio: 1;
+            cursor: pointer;
+            width: 140px;
+            height: 140px;
+            background: #fff;
+            border: 5px solid #ff6b6b;
+            border-radius: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            transition: transform 0.2s;
+        }
+
+        .mystery-card:hover {
+            transform: scale(1.05);
+        }
+
+        .mystery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Giant Overlapping Reveal Canvas Container */
+        .giant-reveal-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border: 8px solid #00acc1;
+            border-radius: 40px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.35);
+            z-index: 150;
+            cursor: pointer;
+            overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .giant-reveal-overlay img {
+            width: 100%;
+            height: 82%;
+            object-fit: contain;
+            background-color: #fff;
+        }
+
+        .giant-reveal-text-bar {
+            width: 100%;
+            height: 18%;
+            background: #007c91;
+            color: #fff;
+            font-size: 3rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .shuffle-btn {
+            background: linear-gradient(135deg, #1dd1a1, #10ac84);
+            color: white;
+            font-size: 2.3rem;
+            font-weight: bold;
+            padding: 12px 50px;
+            border: 5px solid white;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 10px 0px #0b8465, 0 15px 20px rgba(0,0,0,0.35);
+            transition: all 0.1s;
+            margin-top: 5px;
+        }
+
+        .shuffle-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 13px 0px #0b8465, 0 18px 25px rgba(0,0,0,0.45);
+        }
+
+        .shuffle-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 4px 0px #0b8465, 0 6px 6px rgba(0,0,0,0.35);
+        }
+
+        .shuffling {
+            animation: shake 0.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(5px, 5px) rotate(3deg); }
+            100% { transform: translate(-5px, -5px) rotate(-3deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-stage" class="screen-container">
+        
+        <!-- HEADER ELEMENT -->
+        <div id="global-title" class="title-header">WEATHER REPORT</div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: MAIN MENU LAYER                    -->
+        <!-- ========================================== -->
+        <div id="view-main-menu" class="view active">
+            <div class="main-menu-grid">
+                <button class="menu-btn" onclick="switchScene('view-rules', '1.png')">Rules</button>
+                <button class="menu-btn" onclick="startWarmup()">Warm Up</button>
+                <button class="menu-btn" onclick="switchScene('view-reporter', 'mainpage.png')">Weather Reporter</button>
+                <button class="menu-btn" onclick="switchScene('view-sentence-submenu', 'sentence.png')">Sentence Pattern</button>
+                <button class="menu-btn" onclick="switchScene('view-roleplay-submenu', 'reporter.png')">Role Play</button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: RULES                              -->
+        <!-- ========================================== -->
+        <div id="view-rules" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-main-menu', 'mainpage.png')">
+            <img src="rule.png" class="rules-img" alt="Rules Panel">
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: WARM UP - ENTRY PANEL              -->
+        <!-- ========================================== -->
+        <div id="view-warmup-intro" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-main-menu', 'mainpage.png')">
+            <img src="guess.png" class="warmup-cover-img" alt="Guess Cover Graphic">
+            <img src="next.png" class="next-btn" alt="Next" onclick="loadWarmupQuestion(1)">
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 4: WARM UP - INTERACTIVE PLAYGROUND   -->
+        <!-- ========================================== -->
+        <div id="view-warmup-questions" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-main-menu', 'mainpage.png')">
+            
+            <div id="warmup-q-title" class="question-title">1. What's my Job?</div>
+            
+            <div class="game-container">
+                <div class="game-box">
+                    <img id="warmup-job-gif" src="doctor.gif" class="job-gif" alt="Target Profile Graphic">
+                </div>
+                
+                <div class="game-box">
+                    <div id="warmup-hidden-state" class="reveal-inner" onclick="revealWarmupAnswer()">
+                        <img src="click.png" class="reveal-click-icon" alt="Click Interaction Asset">
+                    </div>
+                    <div id="warmup-revealed-state" class="reveal-inner" style="display: none;">
+                        <span id="warmup-answer-text" class="answer-text">DOCTOR</span>
+                    </div>
+                </div>
+
+                <div id="warmup-greatjob-node" class="greatjob-container-node">
+                    <img src="greatjob.gif" class="greatjob-gif-render" alt="Success Trigger Element">
+                </div>
+            </div>
+
+            <img src="next.png" class="next-btn" alt="Next" onclick="nextWarmupStep()">
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 5: WARM UP - CONGRATULATIONS STAGE    -->
+        <!-- ========================================== -->
+        <div id="view-warmup-congrats" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-main-menu', 'mainpage.png')">
+            <img src="congrats.gif" class="warmup-cover-img" alt="Endgame Display Screen Asset">
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 6: WEATHER REPORTER INTERFACE STAGE   -->
+        <!-- ========================================== -->
+        <div id="view-reporter" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-main-menu', 'mainpage.png')">
+            
+            <div class="reporter-layout">
+                <div class="reporter-img-container">
+                    <img src="reporter.png" class="reporter-img-large" alt="Anchor Character Frame Profile">
+                </div>
+                <div class="reporter-content">
+                    <div class="reporter-q">What does a weather reporter do?</div>
+                    <button id="arrow-reveal-btn" class="reveal-arrow-btn" onclick="toggleReporterBullets()">▼</button>
+                    <ul id="reporter-bullets-list" class="reporter-bullets">
+                        <li>A weather reporter tells us about the weather.</li>
+                        <li>They tell us if it's going to be sunny, rainy, cloudy, stormy, windy or snowy.</li>
+                        <li>Helps us know if we should bring an umbrella or not.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 7: SENTENCE PATTERN SUBMENU STAGE     -->
+        <!-- ========================================== -->
+        <div id="view-sentence-submenu" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-main-menu', 'mainpage.png')">
+            <div class="submenu-title">SENTENCE PATTERN</div>
+            <div class="options-container">
+                <img src="easy.png" class="difficulty-img-btn" alt="Easy" onclick="renderSentencePattern('easy')">
+                <img src="medium.png" class="difficulty-img-btn" alt="Medium" onclick="renderSentencePattern('medium')">
+                <img src="hard.png" class="difficulty-img-btn" alt="Hard" onclick="renderSentencePattern('hard')">
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 8: SENTENCE PATTERN DISPLAY CANVAS    -->
+        <!-- ========================================== -->
+        <div id="view-sentence-display" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-sentence-submenu', 'sentence.png')">
+            
+            <!-- Interactive Example Asset Layer (image_1e6bdb.jpg Corner Placement Request) -->
+            <div class="example-dropdown-wrapper" id="example-dropdown">
+                <img src="example.png" class="example-trigger-btn" alt="Examples Toggle" onclick="toggleDropdownMenu(event)">
+                <div class="dropdown-menu-content">
+                    <img src="35.png" class="dropdown-thumb-item" alt="Example 35" onclick="changeSentenceDisplayImage('35.png')">
+                    <img src="7.png" class="dropdown-thumb-item" alt="Example 7" onclick="changeSentenceDisplayImage('7.png')">
+                    <img src="9.png" class="dropdown-thumb-item" alt="Example 9" onclick="changeSentenceDisplayImage('9.png')">
+                    <img src="12.png" class="dropdown-thumb-item" alt="Example 12" onclick="changeSentenceDisplayImage('12.png')">
+                </div>
+            </div>
+
+            <div class="submenu-title" style="margin-bottom:15px;">SENTENCE PATTERN</div>
+            
+            <div class="split-layout">
+                <div class="left-sentence-pane">
+                    <div id="sentence-text-canvas" class="pattern-text-box"></div>
+                </div>
+                <div class="right-interactive-pane">
+                    <img id="sentence-large-display-img" src="rainy.png" class="large-sample-img" alt="Visual Reference Node">
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 9: ROLE PLAY DIFFICULTY SELECT STAGE  -->
+        <!-- ========================================== -->
+        <div id="view-roleplay-submenu" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-main-menu', 'mainpage.png')">
+            <div class="submenu-title">ROLE PLAY</div>
+            <div class="options-container">
+                <img src="easy.png" class="difficulty-img-btn" alt="Easy Game" onclick="initializeRoleplayGame('easy')">
+                <img src="medium.png" class="difficulty-img-btn" alt="Medium Game" onclick="initializeRoleplayGame('medium')">
+                <img src="hard.png" class="difficulty-img-btn" alt="Hard Game" onclick="initializeRoleplayGame('hard')">
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 10: ROLE PLAY INTERACTIVE CANVAS ZONE -->
+        <!-- ========================================== -->
+        <div id="view-roleplay-game" class="view">
+            <img src="back.png" class="back-btn" alt="Back" onclick="switchScene('view-roleplay-submenu', 'reporter.png')">
+            
+            <div class="split-layout">
+                <div class="left-sentence-pane">
+                    <div id="roleplay-sentence-canvas" class="pattern-text-box"></div>
+                </div>
+                
+                <div class="right-interactive-pane">
+                    <div id="mystery-grid-container" class="grid-mystery-boxes"></div>
+                    <button class="shuffle-btn" onclick="executeMysteryShuffle()">SHUFFLE</button>
+                    
+                    <!-- Giant Display Panel: Covers the workspace perfectly matching the left frame -->
+                    <div id="giant-reveal-panel" class="giant-reveal-overlay" onclick="closeGiantReveal()">
+                        <img id="giant-reveal-img" src="" alt="Revealed Big Picture">
+                        <div id="giant-reveal-text" class="giant-reveal-text-bar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PERSISTENT TARGET CLASS BANNER -->
+        <div class="footer-class">Teacher Jet's Class</div>
+
+    </div>
+
+    <script>
+        const warmupRegistry = [
+            { id: 1, text: "1. What's my Job?", answer: "DOCTOR", gif: "doctor.gif" },
+            { id: 2, text: "2. What's my Job?", answer: "PAINTER", gif: "painter.gif" },
+            { id: 3, text: "3. What's my Job?", answer: "TEACHER", gif: "teacher.gif" },
+            { id: 4, text: "4. What's my Job?", answer: "CHEF", gif: "chef.gif" },
+            { id: 5, text: "5. What's my Job?", answer: "PILOT", gif: "pilot.gif" },
+            { id: 6, text: "6. What's my Job?", answer: "POLICE", gif: "police.gif" },
+            { id: 7, text: "7. What's my Job?", answer: "REPORTER", gif: "report.gif" }
+        ];
+
+        let activeWarmupStepPointer = 0;
+        let isStepAnswerRevealed = false;
+
+        const tierContentMatrix = {
+            easy: [
+                { img: "sunny.png", text: "SUNNY" },
+                { img: "rainy.png", text: "RAINY" },
+                { img: "windy.png", text: "WINDY" },
+                { img: "snowy.png", text: "SNOWY" },
+                { img: "stormy.png", text: "STORMY" },
+                { img: "cloudy.png", text: "CLOUDY" }
+            ],
+            medium: [
+                { img: "sunny.png", text: "SUNNY" },
+                { img: "rainy2.png", text: "RAINY" },
+                { img: "windy2.png", text: "WINDY" },
+                { img: "snowy2.png", text: "SNOWY" },
+                { img: "stormy2.png", text: "STORMY" },
+                { img: "sunny2.png", text: "SUNNY" }
+            ],
+            hard: [
+                { img: "stormy3.png", text: "STORMY" },
+                { img: "sunny4.png", text: "SUNNY" },
+                { img: "snowy3.png", text: "SNOWY" },
+                { img: "rain.png", text: "RAINY" }
+            ]
+        };
+
+        let activeTierLevelKey = 'easy';
+        let operationalGridPayload = [];
+
+        function switchScene(targetViewId, backgroundAssetPath) {
+            const views = document.querySelectorAll('.view');
+            views.forEach(v => v.classList.remove('active'));
+
+            const targetViewNode = document.getElementById(targetViewId);
+            if(targetViewNode) {
+                targetViewNode.classList.add('active');
+            }
+
+            const containerNode = document.getElementById('app-stage');
+            if(containerNode && backgroundAssetPath) {
+                containerNode.style.backgroundImage = `url('${backgroundAssetPath}')`;
+            }
+
+            const headerElementNode = document.getElementById('global-title');
+            if (targetViewId === 'view-main-menu') {
+                headerElementNode.style.display = 'block';
+            } else {
+                headerElementNode.style.display = 'none';
+            }
+
+            // Collapse active dropdown context if changing away from the view
+            if (targetViewId !== 'view-sentence-display') {
+                document.getElementById('example-dropdown').classList.remove('active');
+            }
+        }
+
+        // Dropdown Menu Interaction Controls
+        function toggleDropdownMenu(event) {
+            event.stopPropagation();
+            document.getElementById('example-dropdown').classList.toggle('active');
+        }
+
+        function changeSentenceDisplayImage(imageSrc) {
+            document.getElementById('sentence-large-display-img').src = imageSrc;
+            document.getElementById('example-dropdown').classList.remove('active');
+        }
+
+        // Close dropdown when clicking out anywhere on the body element workspace
+        document.body.addEventListener('click', function() {
+            document.getElementById('example-dropdown').classList.remove('active');
+        });
+
+        function startWarmup() {
+            activeWarmupStepPointer = 0;
+            switchScene('view-warmup-intro', 'sentence.png');
+        }
+
+        function loadWarmupQuestion(stepIndexNumber) {
+            activeWarmupStepPointer = stepIndexNumber;
+            isStepAnswerRevealed = false;
+            
+            const questionDataModel = warmupRegistry[activeWarmupStepPointer - 1];
+            
+            document.getElementById('warmup-q-title').innerText = questionDataModel.text;
+            document.getElementById('warmup-job-gif').src = questionDataModel.gif;
+            document.getElementById('warmup-answer-text').innerText = questionDataModel.answer;
+
+            document.getElementById('warmup-hidden-state').style.display = 'flex';
+            document.getElementById('warmup-revealed-state').style.display = 'none';
+            document.getElementById('warmup-greatjob-node').style.display = 'none';
+
+            switchScene('view-warmup-questions', 'sentence.png');
+        }
+
+        function revealWarmupAnswer() {
+            if(isStepAnswerRevealed) return;
+            isStepAnswerRevealed = true;
+
+            document.getElementById('warmup-hidden-state').style.display = 'none';
+            document.getElementById('warmup-revealed-state').style.display = 'flex';
+            document.getElementById('warmup-greatjob-node').style.display = 'block';
+        }
+
+        function nextWarmupStep() {
+            if (activeWarmupStepPointer < warmupRegistry.length) {
+                loadWarmupQuestion(activeWarmupStepPointer + 1);
+            } else {
+                switchScene('view-warmup-congrats', 'sentence.png');
+            }
+        }
+
+        function toggleReporterBullets() {
+            const listContainer = document.getElementById('reporter-bullets-list');
+            const interactionButton = document.getElementById('arrow-reveal-btn');
+            
+            if(listContainer.style.display === 'block') {
+                listContainer.style.display = 'none';
+                interactionButton.innerText = '▼';
+            } else {
+                listContainer.style.display = 'block';
+                interactionButton.innerText = '▲';
+            }
+        }
+
+        function renderSentencePattern(difficultyTierCode) {
+            const stringDestinationPane = document.getElementById('sentence-text-canvas');
+            const mediaDisplayElement = document.getElementById('sentence-large-display-img');
+            
+            let structuredHTMLOutput = '';
+            
+            if(difficultyTierCode === 'easy') {
+                structuredHTMLOutput = `
+                    <p>"Hello, my name is <span class="highlight-name">Teacher Jet</span>"</p>
+                    <p>"Today, the weather is a <span class="highlight-underline">rainy day</span>."</p>
+                `;
+                mediaDisplayElement.src = "rainy.png";
+            } 
+            else if(difficultyTierCode === 'medium') {
+                structuredHTMLOutput = `
+                    <p>"Hello everyone, my name is <span class="highlight-name">Teacher Jet</span>"</p>
+                    <p>"Here is the weather news today."</p>
+                    <p>"Today is a <span class="highlight-underline">rainy day</span>."</p>
+                    <p>"We can see <span class="highlight-underline">a person holding an umbrella</span>."</p>
+                `;
+                mediaDisplayElement.src = "rainy.png";
+            } 
+            else if(difficultyTierCode === 'hard') {
+                structuredHTMLOutput = `
+                    <p>"Hello everyone, my name is <span class="highlight-name">Teacher Jet</span>"</p>
+                    <p>"Here is the weather news today."</p>
+                    <p>"Today is a <span class="highlight-underline">rainy day and the temperature is 10 degrees</span>."</p>
+                    <p>"Today is the best day to <span class="highlight-underline">stay at home and drink a hot chocolate</span>."</p>
+                `;
+                mediaDisplayElement.src = "rain.png";
+            }
+
+            stringDestinationPane.innerHTML = structuredHTMLOutput;
+            switchScene('view-sentence-display', 'sentence.png');
+        }
+
+        function initializeRoleplayGame(difficultySelectionKey) {
+            activeTierLevelKey = difficultySelectionKey;
+            const targetSentenceTextContainer = document.getElementById('roleplay-sentence-canvas');
+            
+            let structureTemplateString = '';
+            if(difficultySelectionKey === 'easy') {
+                structureTemplateString = `
+                    <p>"Hello, my name is ______"</p>
+                    <p>"Today, the weather is _______."</p>
+                `;
+            } else if(difficultySelectionKey === 'medium') {
+                structureTemplateString = `
+                    <p>"Hello everyone, my name is <span class="highlight-name">Teacher Jet</span>"</p>
+                    <p>"Today is a ________."</p>
+                    <p>"We can see _________"</p>
+                `;
+            } else if(difficultySelectionKey === 'hard') {
+                /* Modified based on image_1e6f7f.jpg context: Replaced highlighted Teacher Jet component with an entry slot */
+                structureTemplateString = `
+                    <p>"Hello everyone, my name is ________"</p>
+                    <p>"Here is the weather news today."</p>
+                    <p>"Today is a ____ and the temperature is _____."</p>
+                    <p>"Today is the best day to ______"</p>
+                `;
+            }
+
+            targetSentenceTextContainer.innerHTML = structureTemplateString;
+            operationalGridPayload = JSON.parse(JSON.stringify(tierContentMatrix[difficultySelectionKey]));
+            
+            closeGiantReveal();
+            assembleMysteryCardsGrid();
+            switchScene('view-roleplay-game', 'reporter.png');
+        }
+
+        function assembleMysteryCardsGrid() {
+            const gridCanvasWrapper = document.getElementById('mystery-grid-container');
+            gridCanvasWrapper.innerHTML = '';
+
+            if(activeTierLevelKey === 'hard') {
+                gridCanvasWrapper.className = "grid-mystery-boxes grid-4";
+            } else {
+                gridCanvasWrapper.className = "grid-mystery-boxes grid-6";
+            }
+
+            operationalGridPayload.forEach((cardAssetData, trackingIndexOffset) => {
+                const cardOuterFrame = document.createElement('div');
+                cardOuterFrame.className = 'mystery-card';
+                cardOuterFrame.innerHTML = `<img src="mysterybox.png" alt="Box">`;
+                cardOuterFrame.onclick = function() { triggerGiantReveal(cardAssetData); };
+                gridCanvasWrapper.appendChild(cardOuterFrame);
+            });
+        }
+
+        function triggerGiantReveal(data) {
+            document.getElementById('giant-reveal-img').src = data.img;
+            document.getElementById('giant-reveal-text').innerText = data.text;
+            document.getElementById('giant-reveal-panel').style.display = 'flex';
+        }
+
+        function closeGiantReveal() {
+            document.getElementById('giant-reveal-panel').style.display = 'none';
+        }
+
+        function executeMysteryShuffle() {
+            closeGiantReveal();
+            const interactiveGridBoxElement = document.getElementById('mystery-grid-container');
+            interactiveGridBoxElement.classList.add('shuffling');
+
+            setTimeout(() => {
+                for (let i = operationalGridPayload.length - 1; i > 0; i--) {
+                    const randomGeneratedPointer = Math.floor(Math.random() * (i + 1));
+                    [operationalGridPayload[i], operationalGridPayload[randomGeneratedPointer]] = [operationalGridPayload[randomGeneratedPointer], operationalGridPayload[i]];
+                }
+                assembleMysteryCardsGrid();
+                interactiveGridBoxElement.classList.remove('shuffling');
+            }, 800);
+        }
+    </script>
+</body>
+</html>
